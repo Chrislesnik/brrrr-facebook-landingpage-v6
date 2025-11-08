@@ -3,7 +3,6 @@
 import React from "react";
 import {cn} from "@heroui/react";
 
-import MultistepNavigationButtons from "./multistep-navigation-buttons";
 import HighlightsRotator from "./highlights-rotator";
 import logoUrl from "./vyral-peo-logo.png";
 
@@ -76,20 +75,6 @@ const MultiStepSidebar = React.forwardRef<HTMLDivElement, MultiStepSidebarProps>
           </div>
           <div className="h-full w-full p-4 sm:max-w-md md:max-w-lg">
             {children}
-            <MultistepNavigationButtons
-              backButtonProps={{isDisabled: currentPage === 0}}
-              className="lg:hidden"
-              nextButtonProps={{
-                children:
-                  currentPage === 0
-                    ? "Connect with us"
-                    : currentPage === 3
-                      ? "Submit"
-                      : "Continue",
-              }}
-              onBack={onBack}
-              onNext={onNext}
-            />
           </div>
         </div>
       </div>

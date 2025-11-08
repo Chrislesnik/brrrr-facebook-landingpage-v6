@@ -24,3 +24,17 @@
 .bg-secondary { background-color: var(--color-accent) !important; }
 .text-secondary-foreground { color: var(--color-white) !important; }
 .bg-secondary-foreground { background-color: var(--color-white) !important; }
+
+/* Simple loading spinner used in submit animation */
+.loading-spinner {
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	border-radius: 9999px;
+	border: 2px solid currentColor;
+	border-top-color: transparent;
+	animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}

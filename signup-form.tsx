@@ -5,12 +5,16 @@ import type {InputProps} from "@heroui/react";
 import React from "react";
 import {Input, Textarea} from "@heroui/react";
 import {cn} from "@heroui/react";
+import {ButtonWithBorderGradient} from "./button-with-border-gradient";
+import {LazyMotion, domAnimation, m, AnimatePresence} from "framer-motion";
 
 export type SignUpFormProps = React.HTMLAttributes<HTMLFormElement>;
 
 const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
   ({className, ...props}, ref) => {
     const [phone, setPhone] = React.useState("");
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [submitState, setSubmitState] = React.useState<"idle" | "loading" | "success">("idle");
 
     const inputProps: Pick<InputProps, "labelPlacement" | "classNames"> = {
       labelPlacement: "outside",
@@ -74,6 +78,39 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
       }
     };
 
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (isSubmitting) return;
+      setIsSubmitting(true);
+      setSubmitState("loading");
+      try {
+        const form = e.currentTarget;
+        const data = new FormData(form);
+        const payload = {
+          firstName: String(data.get("first-name") || "").trim(),
+          lastName: String(data.get("last-name") || "").trim(),
+          email: String(data.get("email") || "").trim(),
+          phoneNumber: String(data.get("phone-number") || "").trim(),
+          companyName: String(data.get("company-name") || "").trim(),
+          role: String(data.get("role") || "").trim(),
+          employeeCount: Number(String(data.get("employee-count") || "0")),
+          additionalNotes: String(data.get("additional-notes") || "").trim(),
+        };
+
+        await fetch("https://n8n.axora.info/webhook/de472dda-7707-4d02-a58b-85bca0cafaed", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload),
+        });
+        setSubmitState("success");
+      } catch (_err) {
+        // intentionally silent
+        setSubmitState("idle");
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
     return (
       <>
         <div className="text-default-foreground text-3xl leading-9 font-bold">
@@ -87,6 +124,7 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
           ref={ref}
           {...props}
           className={cn("flex grid grid-cols-12 flex-col gap-4 py-8", className)}
+          onSubmit={onSubmit}
         >
           <Input
             className="col-span-12 md:col-span-6"
@@ -168,7 +206,69 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
             }}
           />
 
-          
+          <div className="col-span-12 mt-2 flex justify-start">
+            <ButtonWithBorderGradient
+              isDisabled={isSubmitting || submitState === "success"}
+              className="text-medium font-medium"
+              type="submit"
+            >
+              <LazyMotion features={domAnimation}>
+                <AnimatePresence mode="wait" initial={false}>
+                  {submitState === "idle" && (
+                    <m.span
+                      key="label"
+                      initial={{opacity: 0, y: 6}}
+                      animate={{opacity: 1, y: 0}}
+                      exit={{opacity: 0, y: -6}}
+                      transition={{duration: 0.2}}
+                    >
+                      Connect with us
+                    </m.span>
+                  )}
+                  {submitState === "loading" && (
+                    <m.div
+                      key="loading"
+                      className="flex items-center gap-2"
+                      initial={{opacity: 0}}
+                      animate={{opacity: 1}}
+                      exit={{opacity: 0}}
+                      transition={{duration: 0.15}}
+                    >
+                      <span className="loading-spinner" />
+                      <span>Submitting</span>
+                    </m.div>
+                  )}
+                  {submitState === "success" && (
+                    <m.div
+                      key="success"
+                      className="flex items-center gap-2"
+                      initial={{scale: 0.9, opacity: 0}}
+                      animate={{scale: 1, opacity: 1}}
+                      exit={{opacity: 0}}
+                      transition={{type: "spring", stiffness: 400, damping: 20}}
+                    >
+                      <m.svg width="20" height="20" viewBox="0 0 24 24">
+                        <m.path
+                          d="M5 13l4 4L19 7"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          initial={{pathLength: 0}}
+                          animate={{pathLength: 1}}
+                          transition={{duration: 0.5}}
+                        />
+                      </m.svg>
+                      <m.span initial={{opacity: 0}} animate={{opacity: 1}} transition={{delay: 0.15}}>
+                        Sent!
+                      </m.span>
+                    </m.div>
+                  )}
+                </AnimatePresence>
+              </LazyMotion>
+            </ButtonWithBorderGradient>
+          </div>
         </form>
       </>
     );
