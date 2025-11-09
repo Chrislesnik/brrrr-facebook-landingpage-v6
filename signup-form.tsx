@@ -25,10 +25,11 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
     };
 
     const formatPhone = React.useCallback((rawValue: string) => {
-      const digitsOnly = rawValue.replace(/\D/g, "").slice(0, 10);
+      const digitsOnly = rawValue.replace(/\D/g, "").slice(0, 15); // 10 for phone + up to 5 for ext
       const area = digitsOnly.slice(0, 3);
       const prefix = digitsOnly.slice(3, 6);
       const line = digitsOnly.slice(6, 10);
+      const ext = digitsOnly.slice(10, 15);
 
       if (digitsOnly.length === 0) return "";
       if (digitsOnly.length <= 3) {
@@ -37,7 +38,13 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
         return `(${area}${close}`;
       }
       if (digitsOnly.length <= 6) return `(${area}) ${prefix}`;
-      return `(${area}) ${prefix}-${line}`;
+      // Base phone
+      let formatted = `(${area}) ${prefix}-${line}`;
+      // Extension (show label once base phone is complete)
+      if (digitsOnly.length >= 10) {
+        formatted += ` Ext.${ext ? ` ${ext}` : ""}`;
+      }
+      return formatted;
     }, []);
 
     const handlePhoneChange = React.useCallback(
@@ -155,10 +162,10 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
             className="col-span-12 md:col-span-6"
             label="Phone Number"
             name="phone-number"
-            placeholder="(555) 555-5555"
+            placeholder="(555) 555-5555 Ext. 1234"
             type="tel"
             inputMode="numeric"
-            maxLength={14}
+            maxLength={26}
             value={phone}
             onChange={handlePhoneChange}
             onKeyDown={handlePhoneKeyDown}
