@@ -31,6 +31,7 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
     const [pricingValidation, setPricingValidation] = React.useState<boolean | null>(null);
     const [pricingErrors, setPricingErrors] = React.useState<string[]>([]);
     const [zip, setZip] = React.useState("");
+    const termsRef = React.useRef<HTMLDivElement>(null);
 
     const inputProps: Pick<InputProps, "labelPlacement" | "classNames"> = {
       labelPlacement: "outside",
@@ -192,6 +193,13 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
       const num = Number(cleaned);
       if (!Number.isFinite(num)) return `$${String(val)}`;
       return num.toLocaleString("en-US", {style: "currency", currency: "USD"});
+    };
+
+    // Treat 'null' string or null/undefined values as empty/not present
+    const isNullishFromApi = (val: any): boolean => {
+      if (val === null || val === undefined) return true;
+      if (typeof val === "string" && val.trim().toLowerCase() === "null") return true;
+      return false;
     };
 
     // Required label helper
@@ -366,6 +374,21 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
         setIsSubmitting(false);
       }
     };
+
+    // When pricing results arrive, smoothly scroll them into view if not visible
+    React.useEffect(() => {
+      if (!pricingResult || !termsRef.current) return;
+      try {
+        const rect = termsRef.current.getBoundingClientRect();
+        const viewportH = window.innerHeight || document.documentElement.clientHeight;
+        const fullyVisible = rect.top >= 0 && rect.bottom <= viewportH;
+        if (!fullyVisible) {
+          termsRef.current.scrollIntoView({behavior: "smooth", block: "start"});
+        }
+      } catch {
+        // no-op
+      }
+    }, [pricingResult]);
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -799,7 +822,7 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
         </form>
         {/* Terms / Results display */}
         {pricingResult && submittedLoanType && (
-          <div className="mt-6 space-y-4 w-full">
+          <div ref={termsRef} className="mt-6 space-y-4 w-full">
             {pricingValidation ? (
               <div className="rounded-large border border-default-200 p-4 w-full max-w-full">
                 {submittedLoanType === "DSCR" ? (
@@ -839,6 +862,7 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
                                   "errors",
                                 ].includes(k),
                             )
+                            .filter(([, v]) => !isNullishFromApi(v))
                             .map(([k, v]) => (
                               <div key={k} className="flex items-center justify-between gap-3 min-w-0">
                                 <dt className="text-sm text-default-500">{k}</dt>
@@ -854,36 +878,44 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
                 ) : (
                   <>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-full">
-                      <div className="rounded-medium bg-content2 p-3">
+                      {(() => {
+                        const v = getValueByAliases(pricingResult, [
+                          "initial loan amount",
+                          "Initial Loan Amount",
+                          "initialLoanAmount",
+                          "InitialLoanAmount",
+                          "loanAmount",
+                          "LoanAmount",
+                        ]);
+                        if (isNullishFromApi(v)) return null;
+                        return (
+                          <div className="rounded-medium bg-content2 p-3">
                         <div className="text-default-500 text-sm">Initial Loan Amount</div>
                         <div className="text-default-foreground text-lg font-semibold">
-                          {formatCurrency(
-                            getValueByAliases(pricingResult, [
-                              "initial loan amount",
-                              "Initial Loan Amount",
-                              "initialLoanAmount",
-                              "InitialLoanAmount",
-                              "loanAmount",
-                              "LoanAmount",
-                            ]),
-                          )}
+                          {formatCurrency(v)}
                         </div>
                       </div>
-                      <div className="rounded-medium bg-content2 p-3">
+                        );
+                      })()}
+                      {(() => {
+                        const v = getValueByAliases(pricingResult, [
+                          "rehab holdback",
+                          "Rehab Holdback",
+                          "rehabHoldback",
+                          "RehabHoldback",
+                          "holdback",
+                          "Holdback",
+                        ]);
+                        if (isNullishFromApi(v)) return null;
+                        return (
+                          <div className="rounded-medium bg-content2 p-3">
                         <div className="text-default-500 text-sm">Rehab Holdback</div>
                         <div className="text-default-foreground text-lg font-semibold">
-                          {formatCurrency(
-                            getValueByAliases(pricingResult, [
-                              "rehab holdback",
-                              "Rehab Holdback",
-                              "rehabHoldback",
-                              "RehabHoldback",
-                              "holdback",
-                              "Holdback",
-                            ]),
-                          )}
+                          {formatCurrency(v)}
                         </div>
                       </div>
+                        );
+                      })()}
                       <div className="rounded-medium bg-content2 p-3">
                         <div className="text-default-500 text-sm">Interest Rate</div>
                         <div className="text-default-foreground text-lg font-semibold">
@@ -913,6 +945,7 @@ const SignUpForm = React.forwardRef<HTMLFormElement, SignUpFormProps>(
                               "interestRate","InterestRate","rate","Rate",
                               "Validation","validation","Errors","errors"
                             ].includes(k))
+                            .filter(([, v]) => !isNullishFromApi(v))
                             .map(([k, v]) => (
                               <div key={k} className="flex items-center justify-between gap-3 min-w-0">
                                 <dt className="text-sm text-default-500">{k}</dt>
