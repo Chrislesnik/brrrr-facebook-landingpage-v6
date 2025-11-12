@@ -31,7 +31,7 @@ export default function Component() {
       onChangePage={() => {}}
       onNext={() => {}}
     >
-      <div className="relative flex h-fit w-full flex-col pt-6 text-center lg:h-full lg:justify-center lg:pt-0">
+      <div className="relative flex h-fit w-full flex-col pt-6 text-left lg:h-full lg:justify-center lg:pt-0">
         <LazyMotion features={domAnimation}>
           <m.div
             key="single"

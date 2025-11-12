@@ -4,7 +4,7 @@ import React from "react";
 import {cn} from "@heroui/react";
 
 import HighlightsRotator from "./highlights-rotator";
-import logoUrl from "./brrrr-logo-2025-11-11.png";
+import logoUrl from "./brrrr-logo-white-2025-11-11.png";
 
 export type MultiStepSidebarProps = React.HTMLAttributes<HTMLDivElement> & {
   currentPage: number;
@@ -33,7 +33,7 @@ const MultiStepSidebar = React.forwardRef<HTMLDivElement, MultiStepSidebarProps>
           className="rounded-large shadow-small flex hidden h-full w-[344px] shrink-0 flex-col items-start gap-y-4 px-8 py-6 lg:flex"
           style={{
             backgroundImage:
-              "linear-gradient(to bottom, rgba(255,77,64,0.12), rgba(255,183,3,0.12))",
+              "linear-gradient(to bottom, rgba(255,77,64,0.15), rgba(255,183,3,0.15))",
           }}
         >
           <img
@@ -57,7 +57,7 @@ const MultiStepSidebar = React.forwardRef<HTMLDivElement, MultiStepSidebarProps>
             className="rounded-large shadow-small w-full py-4 md:max-w-xl lg:hidden"
             style={{
               backgroundImage:
-                "linear-gradient(to right, rgba(255,77,64,0.12), rgba(255,183,3,0.12))",
+              "linear-gradient(to right, rgba(255,77,64,0.15), rgba(255,183,3,0.15))",
             }}
           >
             <div className="flex flex-col items-center gap-2 px-6">

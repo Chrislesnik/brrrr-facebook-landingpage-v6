@@ -33,7 +33,7 @@ export const ButtonWithBorderGradient = ({
         ...styleProp,
       }}
       className="brand-cta hover:opacity-90 active:opacity-80"
-      type="submit"
+      type={props.type ?? "button"}
     >
       {children}
     </Button>
