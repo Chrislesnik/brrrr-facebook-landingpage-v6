@@ -14,8 +14,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         {
           (() => {
             const variant = new URLSearchParams(window.location.search).get("variant");
-            if (!variant || variant === "sow") return <AppScopeOfWork />;
-            if (variant === "checklist") return <AppDocumentChecklist />;
+            if (!variant || variant === "checklist") return <AppDocumentChecklist />;
+            if (variant === "sow") return <AppScopeOfWork />;
             return <AppLeadMagnet />;
           })()
         }
