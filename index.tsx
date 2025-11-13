@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import {HeroUIProvider} from "@heroui/react";
 import AppLeadMagnet from "./AppLeadMagnet";
 import AppScopeOfWork from "./AppScopeOfWork";
+import AppDocumentChecklist from "./AppDocumentChecklist";
 import "./styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -14,6 +15,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           (() => {
             const variant = new URLSearchParams(window.location.search).get("variant");
             if (!variant || variant === "sow") return <AppScopeOfWork />;
+            if (variant === "checklist") return <AppDocumentChecklist />;
             return <AppLeadMagnet />;
           })()
         }
