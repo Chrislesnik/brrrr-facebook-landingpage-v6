@@ -169,11 +169,11 @@ export default function AppDocumentChecklist() {
                     "linear-gradient(to right, rgba(255,77,64,0.15), rgba(255,183,3,0.15))",
                 }}
               >
-                <div className="w-full max-w-[260px] sm:max-w-[320px] md:max-w-[360px] h-[360px] sm:h-[420px] md:h-[480px] mx-auto rounded-medium border border-default-200 overflow-hidden bg-content2/60">
+                <div className="aspect-[3/4] w-full max-w-[260px] sm:max-w-[320px] md:max-w-[360px] mx-auto rounded-medium border border-default-200 overflow-hidden bg-content2/60">
                   <iframe
                     src={
                       docChecklistPdfUrl +
-                      "#page=1&zoom=60&toolbar=0&navpanes=0&scrollbar=0"
+                      "#page=1&zoom=page-fit&toolbar=0&navpanes=0&scrollbar=0"
                     }
                     title="Document Checklist Preview"
                     className="w-full h-full pointer-events-none"
